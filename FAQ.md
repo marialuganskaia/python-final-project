@@ -3,7 +3,7 @@
 Для упрощения жизни и атмосферы в чатике - ответы на некоторые популярные вопросы вынесены сюда. 
 
 
-### Q: Запускается глобальный `pip`/`mypy`/`flake8`, а не из `shad_env`
+### Q: Запускается глобальный `pip`/`mypy`/`flake8`, а не из `hse_env`
 
 <details><summary><b>A: [под спойлером]</b></summary>
 Для начала нужно проверить какой именно (откуда) пакет вы запускайте 
@@ -14,20 +14,20 @@ $ which mypy
 # [some path here]
 ```
 
-Если путь не ведёт в папку с `shad_env`, то у вас проблемы =) 
+Если путь не ведёт в папку с `hse_env`, то у вас проблемы =) 
 
 Убедитесь, что вы активировали environment с пакетами
 ```shell
-$ source shad_env/bin/activate  # замените здесь путь до места установки shad_env 
+$ source hse_env/bin/activate  # замените здесь путь до места установки hse_env 
 
-(shad_env)$ .
+(hse_env)$ .
 ```
 В консоли появится имя окружения перед вводом команды. 
 
 Проверьте ещё раз
 ```shell
 # на примере `mypy`
-(shad_env)$ which mypy
+(hse_env)$ which mypy
 # [some path here]
 ```
 
@@ -35,8 +35,8 @@ $ source shad_env/bin/activate  # замените здесь путь до ме
 
 Самый надежный способ запуска пакеты именно для конкретного питона - вызвать его как модуль
 ```shell
-(shad_env)$ which python
-(shad_env)$ python -m mypy
+(hse_env)$ which python
+(hse_env)$ python -m mypy
 ```
 (при уже включённом `venv`)
 
@@ -51,15 +51,15 @@ $ source shad_env/bin/activate  # замените здесь путь до ме
 Есть 2 варианта как запустить тесты и линтеры 
 * Можно запускать из корня проекта, тогда файл подцепится автоматически
   ```shell
-  (shad_env)$ python -m flake8 ./path/to/the/task
-  (shad_env)$ python -m mypy ./path/to/the/task
-  (shad_env)$ python -m pytest ./path/to/the/task
+  (hse_env)$ python -m flake8 ./path/to/the/task
+  (hse_env)$ python -m mypy ./path/to/the/task
+  (hse_env)$ python -m pytest ./path/to/the/task
   ```
 * Можно запускать из любой директории, но нужно указать файл ручками
   ```shell
-  (shad_env)$ python -m flake8 --config ../../pyproject.toml task_name
-  (shad_env)$ python -m mypy --config-file ../../pyproject.toml task_name
-  (shad_env)$ python -m pytest -c ../../pyproject.toml task_name
+  (hse_env)$ python -m flake8 --config ../../pyproject.toml task_name
+  (hse_env)$ python -m mypy --config-file ../../pyproject.toml task_name
+  (hse_env)$ python -m pytest -c ../../pyproject.toml task_name
   ```
 (при уже включённом `venv`)
 </details>
@@ -108,8 +108,8 @@ $ git push origin main
 
 Вы уже устанавливали её по время SETUP. Но в случае возникновения ошибок можно её переустановить
 ```shell
-(shad_env)$ python -m pip upinstall testlib
-(shad_env)$ python -m pip install --editable tools/testlib
+(hse_env)$ python -m pip upinstall testlib
+(hse_env)$ python -m pip install --editable tools/testlib
 ```
 (при уже включённом `venv`)
 </details>
@@ -126,8 +126,8 @@ $ git push origin main
 
 В этом случае удалите старую и установите ЛОКАЛЬНУЮ библиотеку:
 ```shell
-(shad_env)$ python -m pip upinstall testlib
-(shad_env)$ python -m pip install --editable tools/testlib
+(hse_env)$ python -m pip upinstall testlib
+(hse_env)$ python -m pip install --editable tools/testlib
 ```
 (при уже включённом `venv`)
 </details>
