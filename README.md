@@ -19,7 +19,7 @@ NB: до того как что-то делать **прочитайте эту 
 
 ![](images/gitlab-manytask-schema.png)
 
-* [py.manytask.org](https://manytask.org)  
+* [app.manytask.org](https://manytask.org)  
   Это web обёртка над гугл табличкой (ссылка на страничке). 
   Здесь вы можете видеть все доступные задачки, дедлайны и свои баллы. 
 * [gitlab.manytask.org](https://gitlab.manytask.org/)  
