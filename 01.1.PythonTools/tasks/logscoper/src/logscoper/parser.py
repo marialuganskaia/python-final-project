@@ -100,7 +100,10 @@ def filter_by_status(log_entries: list[LogEntry], status_filter: str) -> list[Lo
     return filtered
 
 
-def filter_by_time(log_entries: list[LogEntry], since: Optional[str] = None, until: Optional[str] = None) -> list[LogEntry]:
+def filter_by_time(
+        log_entries: list[LogEntry],
+        since: Optional[str] = None,
+        until: Optional[str] = None) -> list[LogEntry]:
     filtered = []
 
     since_dt = parse_dt(since) if since else None
