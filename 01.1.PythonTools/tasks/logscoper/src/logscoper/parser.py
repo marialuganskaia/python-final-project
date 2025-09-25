@@ -1,9 +1,8 @@
 from __future__ import annotations
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
 import re
 import sys
-
 from .model import LogEntry
 
 LOG_RE = re.compile(
@@ -13,7 +12,6 @@ LOG_RE = re.compile(
     r'(?:\s+"[^"]*"\s+"[^"]*")?'
     r'(?:\s+(?P<rt>\d+\.\d+)|\s+rt=(?P<rt_kv>\d+\.\d+))?'
 )
-
 
 RT_KV_RE = re.compile(r'(?:^|\s)rt=(?P<rt>\d+\.\d+)\b')
 
@@ -65,11 +63,12 @@ def read_log_file(path: str) -> list[LogEntry]:
                 parsed_lines.append(parsed_line)
         return parsed_lines
 
+
 def filter_log_entries(log_entries: list[LogEntry],
-                       since: str = None,
-                       until: str = None,
-                       status: str = None,
-                       grep: str = None) -> list[LogEntry]:
+                       since: Optional[str] = None,
+                       until: Optional[str] = None,
+                       status: Optional[str] = None,
+                       grep: Optional[str] = None) -> list[LogEntry]:
 
     if since or until:
         log_entries = filter_by_time(log_entries, since, until)
@@ -81,7 +80,6 @@ def filter_log_entries(log_entries: list[LogEntry],
         log_entries = filter_by_reg(log_entries, grep)
 
     return log_entries
-
 
 
 def filter_by_status(log_entries: list[LogEntry], status_filter: str) -> list[LogEntry]:
@@ -102,7 +100,7 @@ def filter_by_status(log_entries: list[LogEntry], status_filter: str) -> list[Lo
     return filtered
 
 
-def filter_by_time(log_entries: list[LogEntry], since: str = None, until: str = None) -> list[LogEntry]:
+def filter_by_time(log_entries: list[LogEntry], since: Optional[str] = None, until: Optional[str] = None) -> list[LogEntry]:
     filtered = []
 
     since_dt = parse_dt(since) if since else None
@@ -138,4 +136,3 @@ def parse_dt(s_entry: str) -> datetime:
 def filter_by_reg(log_entries: list[LogEntry], pattern: str) -> list[LogEntry]:
     reg = re.compile(pattern)
     return [log for log in log_entries if reg.search(log.path)]
-

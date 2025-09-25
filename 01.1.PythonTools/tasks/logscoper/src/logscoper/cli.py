@@ -3,18 +3,11 @@ import argparse
 import sys
 from typing import Optional
 import json
-import re
-
-# from Cython.Shadow import nonecheck
-
 from .parser import filter_log_entries, read_log_file
-
 
 
 def cmd_stats(args: argparse.Namespace) -> int:
     all_log_entries = read_log_file(args.path)
-    # if all_log_entries is None:
-    #     return 2
     filtered_log_entries = filter_log_entries(
         all_log_entries,
         since=args.since,
@@ -36,7 +29,7 @@ def cmd_stats(args: argparse.Namespace) -> int:
         return 0
     total_log_entries = len(filtered_log_entries)
 
-    dist_status = {}
+    dist_status: dict[int, int] = {}
     for log in filtered_log_entries:
         dist_status[log.status] = dist_status.get(log.status, 0) + 1
 
@@ -54,12 +47,12 @@ def cmd_stats(args: argparse.Namespace) -> int:
         p95_rt = None
         p99_rt = None
 
-    path_counts = {}
+    path_counts: dict[str, int] = {}
     for log in filtered_log_entries:
         path_counts[log.path] = path_counts.get(log.path, 0) + 1
 
     top_paths = sorted(path_counts.items(), key=lambda i: i[1], reverse=True)[:args.top]
-    top_paths_format = [[path, count] for path, count in top_paths]
+    top_paths_format: list[tuple[str, int]] = [(path, count) for path, count in top_paths]
 
     if args.json:
         result = {
@@ -87,7 +80,8 @@ def cmd_stats(args: argparse.Namespace) -> int:
             print("P99 RT (ms): n/a")
 
         print("Top paths: ")
-        for path, count in top_paths_format:
+        for el in top_paths_format:
+            path, count = el
             print(f"{count} {path}")
     return 0
 
@@ -95,8 +89,6 @@ def cmd_stats(args: argparse.Namespace) -> int:
 def cmd_filter(args: argparse.Namespace) -> int:
 
     all_log_entries = read_log_file(args.path)
-    # if all_log_entries is None:
-    #     return 2
     filtered_log_entries = filter_log_entries(
         all_log_entries,
         since=args.since,
@@ -131,10 +123,9 @@ def cmd_filter(args: argparse.Namespace) -> int:
         print(output_text)
     return 0
 
+
 def cmd_hist(args: argparse.Namespace) -> int:
     all_log_entries = read_log_file(args.path)
-    # if all_log_entries is None:
-    #     return 2
     if args.strict:
         all_req_time = [log.request_time_s for log in all_log_entries if log.request_time_s is not None]
         if len(all_req_time) == 0:
@@ -151,9 +142,8 @@ def cmd_hist(args: argparse.Namespace) -> int:
 
     req_time = [log.request_time_s * 1000 for log in filtered_log_entries if log.request_time_s is not None]
 
-
     bucket_ms = args.bucket_ms
-    hist = {}
+    hist: dict[str, float] = {}
 
     for rt in req_time:
         buck_start = (rt // bucket_ms) * bucket_ms
