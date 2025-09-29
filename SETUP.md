@@ -191,7 +191,7 @@ $ cd <твоя выбранная директория>
 
 # Клонируем свой репозиторий с gitlab.manytask.org (создается автоматически при регистрации)
 # Имя репозитория доступно по ссылке "MY REPO" на py.manytask.org
-$ git clone git@gitlab.manytask.org:hse-advanced-python/students-fall-2025/<твой репозиторий>
+$ git clone git@gitlab.manytask.org:hse-advanced-python/student-2025-fall/<твой репозиторий>
 
 # Переходим в директорию склонированного репозитория
 $ cd <твой репозиторий>
