@@ -6,7 +6,7 @@ from salon import StringValue, PriceValue, AutoSalon, Car
 class TestStringValue(unittest.TestCase):
     def test_valid_string(self) -> None:
         class TestClass:
-            name: str = StringValue(2, 50)
+            name: StringValue = StringValue(2, 50)
 
             def __init__(self, name: str) -> None:
                 self.name = name
@@ -16,31 +16,31 @@ class TestStringValue(unittest.TestCase):
 
     def test_invalid_string_length(self) -> None:
         class TestClass:
-            name: str = StringValue(2, 50)
+            name: StringValue = StringValue(2, 50)
 
             def __init__(self, name: str) -> None:
                 self.name = name
 
         obj = TestClass("OK")
-        obj.name = "A"  # слишком короткая строка
-        self.assertEqual(obj.name, "OK")  # значение не должно измениться
+        obj.name = "A"
+        self.assertEqual(obj.name, "OK")
 
     def test_non_string_value(self) -> None:
         class TestClass:
-            name: str = StringValue(2, 50)
+            name: StringValue = StringValue(2, 50)
 
             def __init__(self, name: str) -> None:
                 self.name = name
 
         obj = TestClass("ValidName")
-        obj.name = 12345  # не строка
-        self.assertEqual(obj.name, "ValidName")  # значение не должно измениться
+        obj.name = 12345
+        self.assertEqual(obj.name, "ValidName")
 
 
 class TestPriceValue(unittest.TestCase):
     def test_valid_price(self) -> None:
         class TestClass:
-            price: float = PriceValue(10000)
+            price: PriceValue = PriceValue(10000)
 
             def __init__(self, price: float) -> None:
                 self.price = price
@@ -50,36 +50,36 @@ class TestPriceValue(unittest.TestCase):
 
     def test_invalid_price_negative(self) -> None:
         class TestClass:
-            price: float = PriceValue(10000)
+            price: PriceValue = PriceValue(10000)
 
             def __init__(self, price: float) -> None:
                 self.price = price
 
         obj = TestClass(5000)
-        obj.price = -100  # отрицательное значение
-        self.assertEqual(obj.price, 5000)  # значение не должно измениться
+        obj.price = -100
+        self.assertEqual(obj.price, 5000)
 
     def test_invalid_price_over_max(self) -> None:
         class TestClass:
-            price: float = PriceValue(10000)
+            price: PriceValue = PriceValue(10000)
 
             def __init__(self, price: float) -> None:
                 self.price = price
 
         obj = TestClass(5000)
-        obj.price = 15000  # больше максимального значения
-        self.assertEqual(obj.price, 5000)  # значение не должно измениться
+        obj.price = 15000
+        self.assertEqual(obj.price, 5000)
 
     def test_non_numeric_price(self) -> None:
         class TestClass:
-            price: float = PriceValue(10000)
+            price: PriceValue = PriceValue(10000)
 
             def __init__(self, price: float) -> None:
                 self.price = price
 
         obj = TestClass(5000)
-        obj.price = "expensive"  # не числовое значение
-        self.assertEqual(obj.price, 5000)  # значение не должно измениться
+        obj.price = "expensive"
+        self.assertEqual(obj.price, 5000)
 
 
 class TestCar(unittest.TestCase):
@@ -90,13 +90,13 @@ class TestCar(unittest.TestCase):
 
     def test_invalid_car_name(self) -> None:
         car: Car = Car("Lada", 3000)
-        car.name = "A"  # слишком короткое имя
-        self.assertEqual(car.name, "Lada")  # значение не должно измениться
+        car.name = "A"
+        self.assertEqual(car.name, "Lada")
 
     def test_invalid_car_price(self) -> None:
         car: Car = Car("Lada", 3000)
-        car.price = -500  # отрицательная цена
-        self.assertEqual(car.price, 3000)  # значение не должно измениться
+        car.price = -500
+        self.assertEqual(car.price, 3000)
 
 
 class TestAutoSalon(unittest.TestCase):
@@ -123,7 +123,7 @@ class TestAutoSalon(unittest.TestCase):
         car1: Car = Car("Nissan", 8000)
         car2: Car = Car("Toyota", 9000)
         salon.add_car(car1)
-        salon.remove_car(car2)  # пытаемся удалить машину, которой нет в списке
+        salon.remove_car(car2)
         self.assertIn(car1, salon.cars)
         self.assertNotIn(car2, salon.cars)
 
