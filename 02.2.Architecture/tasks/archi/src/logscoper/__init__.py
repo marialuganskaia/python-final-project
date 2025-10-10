@@ -1,4 +1,4 @@
-from .cli import main
+from .infra.cli import main
 
 __all__ = ["main"]
 

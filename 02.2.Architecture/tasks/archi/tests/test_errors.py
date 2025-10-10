@@ -1,7 +1,7 @@
 from __future__ import annotations
 import re, pytest
 from pathlib import Path
-from src.logscoper.cli import main
+from src.logscoper.infra.cli import main
 
 
 def test_missing_file_returns_code(tmp_path: Path):
