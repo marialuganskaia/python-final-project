@@ -40,7 +40,7 @@ def cd(path: Path) -> Generator[None, None, None]:
         os.chdir(cwd)
 
 
-def test__tree__01(sandbox: Path, capsys: CaptureFixture) -> None:
+def test__tree__01(sandbox: Path, capsys: CaptureFixture[str]) -> None:
     """Кейс: Обычный вызов `tree`."""
     file = sandbox / "file.txt"
     file.touch()
@@ -58,7 +58,7 @@ def test__tree__01(sandbox: Path, capsys: CaptureFixture) -> None:
     assert stdout == dedent(expected)
 
 
-def test__tree__02(sandbox: Path, capsys: CaptureFixture) -> None:
+def test__tree__02(sandbox: Path, capsys: CaptureFixture[str]) -> None:
     """Кейс: Обычный вызов `tree`."""
     file = sandbox / "file.txt"
     file.touch()
@@ -84,7 +84,7 @@ def test__tree__02(sandbox: Path, capsys: CaptureFixture) -> None:
     assert stdout == dedent(expected)
 
 
-def test__tree__03(sandbox: Path, capsys: CaptureFixture) -> None:
+def test__tree__03(sandbox: Path, capsys: CaptureFixture[str]) -> None:
     """Кейс: Обычный вызов `tree`."""
     file = sandbox / "file.txt"
     file.touch()
@@ -130,7 +130,7 @@ def test__tree__03(sandbox: Path, capsys: CaptureFixture) -> None:
     assert stdout == dedent(expected)
 
 
-def test__tree__symlink(sandbox: Path, capsys: CaptureFixture) -> None:
+def test__tree__symlink(sandbox: Path, capsys: CaptureFixture[str]) -> None:
     """Кейс: дерево содержит символическую ссылку."""
     file = sandbox / "file.txt"
     file.touch()
@@ -151,7 +151,7 @@ def test__tree__symlink(sandbox: Path, capsys: CaptureFixture) -> None:
     assert stdout == dedent(expected)
 
 
-def test__tree__multiple_symlinks(sandbox: Path, capsys: CaptureFixture) -> None:
+def test__tree__multiple_symlinks(sandbox: Path, capsys: CaptureFixture[str]) -> None:
     """Кейс: дерево содержит несколько символических ссылок."""
     file = sandbox / "file.txt"
     file.touch()
@@ -178,7 +178,7 @@ def test__tree__multiple_symlinks(sandbox: Path, capsys: CaptureFixture) -> None
     assert stdout == dedent(expected)
 
 
-def test__tree__nested_symlinks(sandbox: Path, capsys: CaptureFixture) -> None:
+def test__tree__nested_symlinks(sandbox: Path, capsys: CaptureFixture[str]) -> None:
     """Кейс: дерево содержит вложенные символические ссылки."""
     file = sandbox / "file.txt"
     file.touch()
@@ -210,7 +210,7 @@ def test__tree__nested_symlinks(sandbox: Path, capsys: CaptureFixture) -> None:
     assert stdout == dedent(expected)
 
 
-def test__tree__normalized_argument_path(sandbox: Path, capsys: CaptureFixture) -> None:
+def test__tree__normalized_argument_path(sandbox: Path, capsys: CaptureFixture[str]) -> None:
     """Кейс: нормализация аргумента-пути."""
     file = sandbox / "file.txt"
     file.touch()
@@ -231,7 +231,7 @@ def test__tree__normalized_argument_path(sandbox: Path, capsys: CaptureFixture) 
     assert stdout == dedent(expected)
 
 
-def test__tree__default_path(sandbox: Path, capsys: CaptureFixture) -> None:
+def test__tree__default_path(sandbox: Path, capsys: CaptureFixture[str]) -> None:
     """Кейс: аргумент по умолчанию."""
     with cd(sandbox):
         file = sandbox / "file.txt"
@@ -250,7 +250,7 @@ def test__tree__default_path(sandbox: Path, capsys: CaptureFixture) -> None:
     assert stdout == dedent(expected)
 
 
-def test__tree__empty_directory(sandbox: Path, capsys: CaptureFixture) -> None:
+def test__tree__empty_directory(sandbox: Path, capsys: CaptureFixture[str]) -> None:
     """Кейс: пустая директория."""
     main([sandbox.as_posix()])
 
@@ -264,7 +264,7 @@ def test__tree__empty_directory(sandbox: Path, capsys: CaptureFixture) -> None:
     assert stdout == dedent(expected)
 
 
-def test__tree__help(capsys: CaptureFixture) -> None:
+def test__tree__help(capsys: CaptureFixture[str]) -> None:
     """Кейс: вызов помощи."""
     with pytest.raises(SystemExit) as context:
         main(["--help"])
@@ -281,7 +281,7 @@ def test__tree__help(capsys: CaptureFixture) -> None:
 
 
 @pytest.mark.parametrize("option", ["-i", "--indent"])
-def test__tree__indent__2(option: str, sandbox: Path, capsys: CaptureFixture) -> None:
+def test__tree__indent__2(option: str, sandbox: Path, capsys: CaptureFixture[str]) -> None:
     """Кейс: отступ равен двум."""
     file = sandbox / "file.txt"
     file.touch()
@@ -328,7 +328,7 @@ def test__tree__indent__2(option: str, sandbox: Path, capsys: CaptureFixture) ->
 
 
 @pytest.mark.parametrize("option", ["-i", "--indent"])
-def test__tree__indent__8(option: str, sandbox: Path, capsys: CaptureFixture) -> None:
+def test__tree__indent__8(option: str, sandbox: Path, capsys: CaptureFixture[str]) -> None:
     """Кейс: отступ равен 8."""
     file = sandbox / "file.txt"
     file.touch()
@@ -377,7 +377,7 @@ def test__tree__indent__8(option: str, sandbox: Path, capsys: CaptureFixture) ->
 @pytest.mark.parametrize("option", ["-i", "--indent"])
 @pytest.mark.parametrize("indent", ["0", "-1", "-2", "-4"])
 def test__tree__indent__non_positive(
-    indent: str, option: str, sandbox: Path, capsys: CaptureFixture
+    indent: str, option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: отступ не положительный."""
     with pytest.raises(SystemExit) as context:
@@ -396,7 +396,7 @@ def test__tree__indent__non_positive(
 
 @pytest.mark.parametrize("option", ["-p", "--prune"])
 def test__tree__prune__simple(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: исключение пустых директорий."""
     directory = sandbox / "directory"
@@ -416,7 +416,7 @@ def test__tree__prune__simple(
 
 @pytest.mark.parametrize("option", ["-p", "--prune"])
 def test__tree__prune__nested__01(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: исключение пустых вложенных директорий."""
     file = sandbox / "file.txt"
@@ -446,7 +446,7 @@ def test__tree__prune__nested__01(
 
 @pytest.mark.parametrize("option", ["-p", "--prune"])
 def test__tree__prune__nested__02(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: исключение пустых вложенных директорий."""
     file = sandbox / "file.txt"
@@ -489,7 +489,7 @@ def test__tree__prune__nested__02(
 
 @pytest.mark.parametrize("option", ["-p", "--prune"])
 def test__tree__prune__nested__03(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: исключение пустых вложенных директорий."""
     file = sandbox / "file.txt"
@@ -532,7 +532,7 @@ def test__tree__prune__nested__03(
 
 @pytest.mark.parametrize("option", ["-d", "--depth"])
 def test__tree__limited_depth__0(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: ограничение на глубину."""
     file = sandbox / "file.txt"
@@ -552,7 +552,7 @@ def test__tree__limited_depth__0(
 
 @pytest.mark.parametrize("option", ["-d", "--depth"])
 def test__tree__limited_depth__1(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: ограничение на глубину."""
     file = sandbox / "file.txt"
@@ -597,7 +597,7 @@ def test__tree__limited_depth__1(
 
 @pytest.mark.parametrize("option", ["-d", "--depth"])
 def test__tree__limited_depth__2(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: ограничение на глубину."""
     file = sandbox / "file.txt"
@@ -644,7 +644,7 @@ def test__tree__limited_depth__2(
 
 @pytest.mark.parametrize("option", ["-d", "--depth"])
 def test__tree__limited_depth__3(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: ограничение на глубину."""
     file = sandbox / "file.txt"
@@ -693,7 +693,7 @@ def test__tree__limited_depth__3(
 
 @pytest.mark.parametrize("option", ["-o", "--output"])
 def test__tree__redirect_output(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: перенаправить вывод в файл."""
     filename = "file.txt"
@@ -718,7 +718,7 @@ def test__tree__redirect_output(
 
 @pytest.mark.parametrize("option", ["-o", "--output"])
 def test__tree__redirect_output__overwrite(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: перезаписать файл."""
     filename = "file.txt"
@@ -748,7 +748,7 @@ def test__tree__redirect_output__overwrite(
 
 @pytest.mark.parametrize("option", ["-o", "--output"])
 def test__tree__redirect_output__directory(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: вывод перенаправили в директорию."""
     file = sandbox / "file.txt"
@@ -770,7 +770,7 @@ def test__tree__redirect_output__directory(
 
 @pytest.mark.parametrize("option", ["-o", "--output"])
 def test__tree__redirect_output__symlink_to_file(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: вывод перенаправили в символическую ссылку, которая указывает на файл."""
     symlink_name = "symlink"
@@ -797,7 +797,7 @@ def test__tree__redirect_output__symlink_to_file(
 
 @pytest.mark.parametrize("option", ["-e", "--extension"])
 def test__tree__filter_by_extension(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: фильтр по расширению."""
     file = sandbox / "file.txt"
@@ -821,7 +821,7 @@ def test__tree__filter_by_extension(
 
 @pytest.mark.parametrize("option", ["-e", "--extension"])
 def test__tree__filter_by_extension__no_dot(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: фильтр по расширению без начальной точки."""
     file = sandbox / "file.txt"
@@ -845,7 +845,7 @@ def test__tree__filter_by_extension__no_dot(
 
 @pytest.mark.parametrize("option", ["-e", "--extension"])
 def test__tree__filter_by_extension__empty_string(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: пустое расширение."""
     file = sandbox / "file.txt"
@@ -872,7 +872,7 @@ def test__tree__filter_by_extension__empty_string(
 
 @pytest.mark.parametrize("option", ["-e", "--extension"])
 def test__tree__filter_by_extension__multidot_extension__01(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: многоуровневое расширение."""
     file = sandbox / "file.tar.gz"
@@ -893,7 +893,7 @@ def test__tree__filter_by_extension__multidot_extension__01(
 
 @pytest.mark.parametrize("option", ["-e", "--extension"])
 def test__tree__filter_by_extension__multidot_extension__02(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: многоуровневое расширение."""
     file = sandbox / "file.tar.gz"
@@ -913,7 +913,7 @@ def test__tree__filter_by_extension__multidot_extension__02(
 
 @pytest.mark.parametrize("option", ["-e", "--extension"])
 def test__tree__filter_by_extension__starts_with_dot__01(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: многоуровневое расширение."""
     file = sandbox / ".gitignore"
@@ -933,7 +933,7 @@ def test__tree__filter_by_extension__starts_with_dot__01(
 
 @pytest.mark.parametrize("option", ["-e", "--extension"])
 def test__tree__filter_by_extension__starts_with_dot__02(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: многоуровневое расширение."""
     file = sandbox / ".gitignore"
@@ -954,7 +954,7 @@ def test__tree__filter_by_extension__starts_with_dot__02(
 
 @pytest.mark.parametrize("option", ["-e", "--extension"])
 def test__tree__filter_by_multiple_extensions__01(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: фильтр по расширениям."""
     file = sandbox / "file.txt"
@@ -998,7 +998,7 @@ def test__tree__filter_by_multiple_extensions__01(
 
 @pytest.mark.parametrize("option", ["-e", "--extension"])
 def test__tree__filter_by_multiple_extensions__02(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: фильтр по расширениям."""
     file = sandbox / "file.txt"
@@ -1043,7 +1043,7 @@ def test__tree__filter_by_multiple_extensions__02(
 
 @pytest.mark.parametrize("option", ["-e", "--extension"])
 def test__tree__filter_by_extension__prune__01(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: фильтр по расширению, c пустыми директориями."""
     file = sandbox / "file.md"
@@ -1070,7 +1070,7 @@ def test__tree__filter_by_extension__prune__01(
 
 @pytest.mark.parametrize("option", ["-e", "--extension"])
 def test__tree__filter_by_extension__prune__02(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: фильтр по расширению, c пустыми директориями."""
     directory = sandbox / "directory"
@@ -1107,7 +1107,7 @@ def test__tree__filter_by_extension__prune__02(
 
 @pytest.mark.parametrize("option", ["-e", "--extension"])
 def test__tree__filter_by_extension__prune__03(
-    option: str, sandbox: Path, capsys: CaptureFixture
+    option: str, sandbox: Path, capsys: CaptureFixture[str]
 ) -> None:
     """Кейс: фильтр по расширению, c пустыми директориями."""
     file = sandbox / "file.cpp"
@@ -1159,7 +1159,7 @@ def test__tree__multiple_options(
     output_option: str,
     indent_option: str,
     sandbox: Path,
-    capsys: CaptureFixture,
+    capsys: CaptureFixture[str],
 ) -> None:
     """Кейс: несколько опций."""
     filename = "file.txt"
