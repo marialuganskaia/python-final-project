@@ -6,7 +6,7 @@ import time
 
 # locally it takes 30 seconds
 @pytest.mark.timeout(100)
-def test_mandelbrot_parallel():
+def test_mandelbrot_parallel() -> None:
     # Test with different numbers of workers
     width, height, max_iter = 399, 399, 1250
     generators = [MandelbrotGenerator(num_workers=i) for i in range(4, 0, -1)]
@@ -16,14 +16,8 @@ def test_mandelbrot_parallel():
     for gen in generators:
         start_time = time.time()
         result = gen.generate(width, height, max_iter)
-        assert (
-            len(result) == height
-        ), f"Incorrect height for {
-            gen.num_workers} workers"
-        assert (
-            len(result[0]) == width
-        ), f"Incorrect width for {
-            gen.num_workers} workers"
+        assert len(result) == height, f"Incorrect height for {gen.max_num_workers} workers"
+        assert len(result[0]) == width, f"Incorrect width for {gen.max_num_workers} workers"
         end_time = time.time()
         results.append(result)
         times.append(end_time - start_time)

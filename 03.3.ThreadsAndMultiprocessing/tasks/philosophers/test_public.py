@@ -36,7 +36,7 @@ class PhilosopherSimulationChecker:
                 return True
         return False
 
-    def comprehensive_check(self, duration: float) -> bool:
+    def comprehensive_check(self, duration: int) -> bool:
         """
         Run a comprehensive check for a specified duration.
         """
@@ -49,7 +49,7 @@ class PhilosopherSimulationChecker:
         return True
 
 
-def test_public():
+def test_public() -> None:
     checker = PhilosopherSimulationChecker(Dinner(5, [lambda: randint(
         1, 10) for _ in range(5)], [lambda: randint(1, 10) for _ in range(5)]))
 

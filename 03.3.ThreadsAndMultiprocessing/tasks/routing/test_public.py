@@ -7,7 +7,7 @@ from routing import Router, Server, Request
 
 
 @pytest.fixture
-def servers():
+def servers() -> list[Server]:
     return [
         Server("server1", 100),
         Server("server2", 150),
@@ -16,11 +16,11 @@ def servers():
 
 
 @pytest.fixture
-def router(servers):
+def router(servers: list[Server]) -> Router:
     return Router(servers, max_load=5)
 
 
-def test_server_process_request():
+def test_server_process_request() -> None:
     server = Server("test_server", 100)
     request = Request("client1", "request1", 0.1)
 
@@ -29,7 +29,7 @@ def test_server_process_request():
     assert not server.is_processed("request2")
 
 
-def test_server_crash_and_recover():
+def test_server_crash_and_recover() -> None:
     server = Server("test_server", 100)
     assert server.is_alive()
 
@@ -40,17 +40,17 @@ def test_server_crash_and_recover():
     assert server.is_alive()
 
 
-def test_router_basic_routing(router):
+def test_router_basic_routing(router: Router) -> None:
     request = Request("client1", "request1", 0.1)
     router.route(request)
 
     assert any(server.is_processed("request1") for server in router.servers)
 
 
-def test_router_round_robin(router):
+def test_router_round_robin(router: Router) -> None:
     num_requests = 1000
     for server in router.servers:
-        server.performance_score = 100  # Set a uniform performance score
+        server.performance_score = 100
 
     requests = [Request(f"client{i}", f"request{i}", 0.01)
                 for i in range(num_requests)]
@@ -64,21 +64,18 @@ def test_router_round_robin(router):
     processed_counts = [sum(server.is_processed(f"request{i}") for i in range(
         num_requests)) for server in router.servers]
 
-    # Check that the processed counts are within a reasonable range of each
-    # other
-    # Allow for some deviation due to concurrency
     assert max(processed_counts) - min(processed_counts) <= num_requests * 0.05
 
 
-def test_router_max_load(router):
+def test_router_max_load(router: Router) -> None:
     slow_request_time = 0.2
     num_requests = 7
     num_servers = len(router.servers)
     max_load = router.max_load
 
-    processed_requests = []
+    processed_requests: list[Request] = []
 
-    def slow_request(index: int):
+    def slow_request(index: int) -> None:
         request = Request(
             f"client_slow_{index}",
             f"request_slow_{index}",
@@ -92,31 +89,24 @@ def test_router_max_load(router):
     for thread in threads:
         thread.start()
 
-    # Wait for all threads to complete
     for thread in threads:
         thread.join()
 
     end_time = time.time()
     total_time = end_time - start_time
 
-    # All requests should be processed now
-    assert len(processed_requests) == num_requests, f"Processed requests: {
-        len(processed_requests)}"
+    assert len(processed_requests) == num_requests, f"Processed requests: {len(processed_requests)}"
 
     min_expected_time = slow_request_time * \
         (num_requests // min(num_servers, max_load) + 1)
     max_expected_time = slow_request_time * \
         (num_requests // min(num_servers, max_load) + 1) * 2
 
-    assert total_time >= min_expected_time, f"Total time ({
-        total_time:.2f}s) is less than expected minimum ({
-        min_expected_time:.2f}s)"
-    assert total_time <= max_expected_time, f"Total time ({
-        total_time:.2f}s) exceeds expected maximum ({
-        max_expected_time:.2f}s)"
+    assert total_time >= min_expected_time, f"Total time ({total_time:.2f}s) is less than expected minimum ({min_expected_time:.2f}s)" # noqa
+    assert total_time <= max_expected_time, f"Total time ({total_time:.2f}s) exceeds expected maximum ({max_expected_time:.2f}s)" # noqa
 
 
-def test_router_server_failure(router):
+def test_router_server_failure(router: Router) -> None:
     router.servers[0].crash()
 
     requests = [Request(f"client{i}", f"request{i}", 0.1) for i in range(6)]
@@ -130,20 +120,18 @@ def test_router_server_failure(router):
         f"request{i}") for server in router.servers[1:]) for i in range(6))
 
 
-def test_router_add_remove_server(router):
+def test_router_add_remove_server(router: Router) -> None:
     new_server = Server("new_server", 175)
     router.add_server(new_server)
-    assert new_server.server_id in set(
-        server.server_id for server in router.servers)
+    assert new_server.server_id in {server.server_id for server in router.servers}
 
     some_server = router.servers[0]
     router.remove_server(some_server)
-    assert some_server.server_id not in set(
-        server.server_id for server in router.servers)
+    assert some_server.server_id not in {server.server_id for server in router.servers}
 
 
-def test_concurrent_requests(router):
-    def make_request(client_id: str, request_id: str):
+def test_concurrent_requests(router: Router) -> None:
+    def make_request(client_id: str, request_id: str) -> str:
         request = Request(client_id, request_id, 0.1)
         router.route(request)
         return request_id
@@ -161,11 +149,11 @@ def test_concurrent_requests(router):
                for server in router.servers) for request_id in results)
 
 
-def test_weighted_round_robin(servers):
+def test_weighted_round_robin(servers: list[Server]) -> None:
     weighted_router = Router(servers, max_load=10)
     requests = [Request(f"client{i}", f"request{i}", 0.1) for i in range(90)]
 
-    def route_request(request):
+    def route_request(request: Request) -> str:
         weighted_router.route(request)
         return request.request_id
 
@@ -184,19 +172,18 @@ def test_weighted_round_robin(servers):
         total_weight for server in servers]
 
     for count, expected_ratio in zip(processed_counts, expected_ratios):
-        # Allow for some deviation due to concurrency
         assert abs(count / 90 - expected_ratio) < 0.1
 
 
-def test_client_affinity(router):
-    client_requests = {
+def test_client_affinity(router: Router) -> None:
+    client_requests: dict[str, list[Request]] = {
         f"client{i}": [
             Request(
                 f"client{i}",
                 f"request{i}_{j}",
                 0.1) for j in range(5)] for i in range(3)}
 
-    def route_client_requests(client, requests):
+    def route_client_requests(client: str, requests: list[Request]) -> str:
         for request in requests:
             router.route(request)
         return client
@@ -215,5 +202,4 @@ def test_client_affinity(router):
     for client, requests in client_requests.items():
         processed_servers = [server for server in router.servers if any(
             server.is_processed(request.request_id) for request in requests)]
-        # All requests from one client should be processed by the same server
         assert len(processed_servers) == 1
