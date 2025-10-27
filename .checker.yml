@@ -1,0 +1,5 @@
+exclude:
+  - "hse_env/"
+  - "*.pyc"
+  - "__pycache__/"
+  - ".git/"
