@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import multiprocessing as mp
 import ctypes
 import math
-from typing import List, Tuple, Optional, Any
+from typing import List, Tuple, Any
 
 all_arr: Any = None
 all_width: int = 0
