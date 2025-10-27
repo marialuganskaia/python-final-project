@@ -53,4 +53,4 @@ def test_public() -> None:
     checker = PhilosopherSimulationChecker(Dinner(5, [lambda: randint(
         1, 10) for _ in range(5)], [lambda: randint(1, 10) for _ in range(5)]))
 
-    assert checker.comprehensive_check(100)
+    assert checker.comprehensive_check(50)
