@@ -92,7 +92,7 @@ class MandelbrotGenerator:
 def visualize(data: list[list[float]], colormap: str = 'magma', save_path: str | None = None) -> None:
     plt.imshow(data, cmap=colormap)
     # plt.colorbar()
-    plt.axis('off')
+    plt.axis('off') #нужно закоммитить
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches='tight', pad_inches=0, transparent=True, format='png')
     else:
