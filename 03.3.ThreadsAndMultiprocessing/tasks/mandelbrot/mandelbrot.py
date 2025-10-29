@@ -55,16 +55,16 @@ class MandelbrotGenerator:
 
     def generate(self, width: int, height: int, max_iter: int) -> List[List[float]]:
         # Implement the parallel version of the Mandelbrot set generation
-        if width * height < 1000 or self.num_workers == 1:
-            result: List[List[float]] = []
-            for i in range(height):
-                row: List[float] = []
-                for j in range(width):
-                    c = _scale(j, i, width, height)
-                    it = calculate_mandelbrot(c, max_iter)
-                    row.append(it)
-                result.append(row)
-            return result
+        # if width * height < 1000 or self.num_workers == 1:
+        #     result: List[List[float]] = []
+        #     for i in range(height):
+        #         row: List[float] = []
+        #         for j in range(width):
+        #             c = _scale(j, i, width, height)
+        #             it = calculate_mandelbrot(c, max_iter)
+        #             row.append(it)
+        #         result.append(row)
+        #     return result
 
         arr: Any = mp.Array(ctypes.c_float, width * height, lock=False)
         block_size: int = 64
