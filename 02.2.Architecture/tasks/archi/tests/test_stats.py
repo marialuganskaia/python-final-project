@@ -1,6 +1,6 @@
 from __future__ import annotations
 import json
-from src.logscoper.cli import main
+from src.logscoper.infra.cli import main
 
 
 def test_stats_text(sample_log, capsys):

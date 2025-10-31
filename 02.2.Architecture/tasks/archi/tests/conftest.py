@@ -125,4 +125,4 @@ def rt_kv_mixed_log(tmp_path: Path) -> Path:
 
 
 def collect_lines(capsys):
-    return [l for l in capsys.readouterr().out.splitlines() if l.strip()]
+    return [el for el in capsys.readouterr().out.splitlines() if el.strip()]

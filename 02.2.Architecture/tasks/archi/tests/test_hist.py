@@ -1,6 +1,6 @@
 from __future__ import annotations
 import json, pytest
-from src.logscoper.cli import main
+from src.logscoper.infra.cli import main
 
 
 @pytest.mark.parametrize(
