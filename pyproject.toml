@@ -31,7 +31,8 @@ enable_incomplete_feature = "NewGenericSyntax"
 exclude = [
     "tests/",
     ".tmp/",
-    ".venv/"
+    ".venv/",
+    "02\\.2\\.Architecture/"
 ]
 
 [tool.pyright]
