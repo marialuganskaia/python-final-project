@@ -1,6 +1,6 @@
 from __future__ import annotations
 import pytest
-from src.logscoper.infra.cli import main
+from ..src.logscoper.infra.cli import main
 from .conftest import collect_lines
 
 
