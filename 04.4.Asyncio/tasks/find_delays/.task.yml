@@ -1,0 +1,4 @@
+version: 1
+
+parameters:
+  allow_change: [coroutines.py]
