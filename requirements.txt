@@ -1,7 +1,12 @@
 # internet 
+aioresponses==0.7.6
+aiohappyeyeballs==2.4.3
+aiohttp==3.10.5
+aioresponses==0.7.6
+aiosignal==1.3.1
+asyncio==3.4.3
 requests==2.32.3
 beautifulsoup4==4.12.3
-aiohttp==3.10.5
 yarl==1.11.1
 
 # c bindings and compillers
