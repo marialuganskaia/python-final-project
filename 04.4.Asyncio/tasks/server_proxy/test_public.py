@@ -4,34 +4,35 @@ from typing import Any
 
 import aiohttp
 from aiohttp import web
-from aiohttp.test_utils import AioHTTPTestCase, make_mocked_request
+from aiohttp.test_utils import AioHTTPTestCase
 from yarl import URL
 
-from proxy import close_app, initialize_app, request_handler
+from proxy import close_app, initialize_app
 
 
 class ProxyFetchTests(AioHTTPTestCase):
     async def get_application(self) -> web.Application:
         """Создаёт тестовое приложение с тремя endpoint'ами."""
+        app_instance = web.Application()
 
-        async def success_endpoint(request: web.Request) -> web.Response:
-            raise web.HTTPOk(text="Success")
+        async def success_endpoint(_: web.Request) -> web.Response:
+            return web.Response(text="Success")
 
-        async def error_endpoint(request: web.Request) -> web.Response:
+        async def error_endpoint(_: web.Request) -> web.Response:
             raise web.HTTPInternalServerError(text="Internal server error")
 
-        async def delay_endpoint(request: web.Request) -> web.Response:
+        async def delay_endpoint(_: web.Request) -> web.Response:
             await asyncio.sleep(1)
-            raise web.HTTPOk(text="Delayed response")
+            return web.Response(text="Delayed response")
 
-        app_instance = web.Application()
         app_instance.router.add_get("/success", success_endpoint)
         app_instance.router.add_get("/error", error_endpoint)
         app_instance.router.add_get("/delay", delay_endpoint)
+
+        await initialize_app(app_instance)
         return app_instance
 
     def generate_server_url(self, path: str) -> str:
-        """Генерация URL для локального тестового сервера."""
         return str(
             URL.build(
                 scheme="http",
@@ -41,9 +42,7 @@ class ProxyFetchTests(AioHTTPTestCase):
             )
         )
 
-    @staticmethod
-    def prepare_fetch_url(destination_url: str) -> str:
-        """Формирует URL запроса для прокси /fetch."""
+    def prepare_fetch_url(self, destination_url: str) -> str:
         return str(
             URL.build(
                 path="/fetch",
@@ -52,145 +51,72 @@ class ProxyFetchTests(AioHTTPTestCase):
         )
 
     async def test_fetch_success(self) -> None:
-        async with aiohttp.ClientSession() as session:
-            request = make_mocked_request(
-                "GET",
-                self.prepare_fetch_url(self.generate_server_url("/success")),
-            )
-            request.app["session"] = session
-            try:
-                response = await request_handler(request)
-            except web.HTTPException as exc:
-                response = exc
-        assert response.body == b"Success"
-        assert response.status == 200
+        url = self.prepare_fetch_url(self.generate_server_url("/success"))
+        resp = await self.client.get(url)
+        assert resp.status == 200
+        assert await resp.text() == "Success"
 
     async def test_fetch_error(self) -> None:
-        async with aiohttp.ClientSession() as session:
-            request = make_mocked_request(
-                "GET",
-                self.prepare_fetch_url(self.generate_server_url("/error")),
-            )
-            request.app["session"] = session
-            try:
-                response = await request_handler(request)
-            except web.HTTPException as exc:
-                response = exc
-        assert response.body == b"Internal server error"
-        assert response.status == 500
+        url = self.prepare_fetch_url(self.generate_server_url("/error"))
+        resp = await self.client.get(url)
+        assert resp.status == 500
+        assert await resp.text() == "Internal server error"
 
     async def test_invalid_url(self) -> None:
-        async with aiohttp.ClientSession() as session:
-            request = make_mocked_request(
-                "GET",
-                self.prepare_fetch_url("invalid_url"),
-            )
-            request.app["session"] = session
-            try:
-                response = await request_handler(request)
-            except web.HTTPException as exc:
-                response = exc
-        assert response.status == 400
-        assert response.body == b"Empty url scheme"
+        url = self.prepare_fetch_url("invalid_url")
+        resp = await self.client.get(url)
+        assert resp.status == 400
+        assert await resp.text() == "Empty url scheme"
 
     async def test_missing_url(self) -> None:
-        async with aiohttp.ClientSession() as session:
-            request = make_mocked_request("GET", "/fetch")
-            request.app["session"] = session
-            try:
-                response = await request_handler(request)
-            except web.HTTPException as exc:
-                response = exc
-        assert response.status == 400
-        assert response.body == b"No url to fetch"
+        resp = await self.client.get("/fetch")
+        assert resp.status == 400
+        assert await resp.text() == "No url to fetch"
 
     async def test_unsupported_scheme(self) -> None:
-        async with aiohttp.ClientSession() as session:
-            request = make_mocked_request(
-                "GET",
-                self.prepare_fetch_url("ftp://example.com/"),
-            )
-            request.app["session"] = session
-            try:
-                response = await request_handler(request)
-            except web.HTTPException as exc:
-                response = exc
-        assert response.status == 400
-        assert response.body == b"Bad url scheme: ftp"
+        url = self.prepare_fetch_url("ftp://example.com/")
+        resp = await self.client.get(url)
+        assert resp.status == 400
+        assert await resp.text() == "Bad url scheme: ftp"
 
     async def test_concurrent_fetches(self) -> None:
-        async with aiohttp.ClientSession() as session:
-            tasks: list[Any] = []
-            start = time.time()
-            for _ in range(3):
-                request = make_mocked_request(
-                    "GET",
-                    self.prepare_fetch_url(self.generate_server_url("/delay")),
-                )
-                request.app["session"] = session
-                tasks.append(request_handler(request))
-            responses = await asyncio.gather(*tasks, return_exceptions=True)
-            end = time.time()
+        start = time.time()
+        urls = [
+            self.prepare_fetch_url(self.generate_server_url("/delay"))
+            for _ in range(3)
+        ]
+        tasks = [self.client.get(u) for u in urls]
+        responses = await asyncio.gather(*tasks)
+        end = time.time()
+
         assert end - start < 1.5
-        assert all(response.status == 200 for response in responses)
+        for resp in responses:
+            assert resp.status == 200
+            assert await resp.text() == "Delayed response"
 
 
 class AppLifecycleTests(AioHTTPTestCase):
     async def get_application(self) -> web.Application:
-        """Создаёт приложение с маршрутом /ping и инициализацией прокси."""
         app_instance = web.Application()
         await initialize_app(app_instance)
 
-        async def test_endpoint(request: web.Request) -> web.Response:
-            raise web.HTTPOk(text="pong")
+        async def test_endpoint(_: web.Request) -> web.Response:
+            return web.Response(text="pong")
 
         app_instance.router.add_get("/ping", test_endpoint)
         return app_instance
 
     async def tearDownAsync(self) -> None:
-        """Закрывает ресурсы приложения после теста."""
         await close_app(self.server.app)
 
-    def generate_full_url(
-        self, path: str, query: dict[str, str] | None = None
-    ) -> str:
-        """Формирует полный URL для тестового запроса."""
-        return str(
-            URL.build(
-                scheme="http",
-                host=self.server.host,
-                port=self.server.port,
-                path=path,
-                query=query,
-            )
-        )
-
-    async def execute_fetch(
-        self, session: aiohttp.ClientSession, url_to_fetch: str
-    ) -> aiohttp.ClientResponse:
-        """Выполняет GET-запрос через прокси /fetch."""
-        url = str(
-            URL(
-                self.generate_full_url(
-                    path="/fetch",
-                    query={"url": url_to_fetch},
+    async def test_app_fetching(self) -> None:
+        async with aiohttp.ClientSession() as session:
+            url = str(
+                URL(
+                    f"http://{self.server.host}:{self.server.port}/fetch?url="
+                    f"http://{self.server.host}:{self.server.port}/ping"
                 )
             )
-        )
-        return await session.get(url)
-
-    async def test_app_fetching(self) -> None:
-        """Проверяет, что запросы через /fetch работают корректно."""
-        async with aiohttp.ClientSession() as session:
-            response = await self.execute_fetch(
-                session,
-                self.generate_full_url(path="/ping"),
-            )
+            response = await session.get(url)
             assert response.status == 200
             assert await response.text() == "pong"
-
-            response = await self.execute_fetch(
-                session,
-                self.generate_full_url(path="/ping"),
-            )
-            assert response.status == 200
