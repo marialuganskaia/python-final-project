@@ -6,7 +6,11 @@ import aiohttp
 
 async def send_request(session: aiohttp.ClientSession, url: str) -> None:
     """Отправка одного запроса (заглушка)."""
-    pass
+    try:
+        async with session.get(url) as response:
+            await response.text()
+    except Exception:
+        pass
 
 
 async def main(url: str, total_requests: int, concurrent_requests: int) -> None:
