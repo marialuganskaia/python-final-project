@@ -1,1 +1,4 @@
 version: 1
+
+parameters:
+  allow_change: [testlib_test.py]

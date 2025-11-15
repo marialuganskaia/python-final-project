@@ -1,1 +1,5 @@
 version: 1
+
+parameters:
+  allow_change: [mandelbrot.py]
+  timeout: 90
