@@ -1,4 +1,0 @@
-version: 1
-
-parameters:
-  allow_change: [hello_world.py]
